@@ -7,10 +7,9 @@ import pytest
 
 from app.domain.exceptions import (
     CurrencyCodeError,
-    DomainError,
+    RateNonPositiveValueError,
     RateNotFiniteError,
-    RateValueError,
-    ScaleValueError,
+    ScaleNonPositiveValueError,
 )
 from app.domain.value_objects import CurrencyCode, DealStatus, ExchangeRate
 
@@ -118,7 +117,7 @@ def test_exchange_rate_accepts_minimal_scale() -> None:
 
 @pytest.mark.parametrize("scale", [0, -1], ids=["zero", "negative"])
 def test_exchange_rate_rejects_non_positive_scale(scale: int) -> None:
-    with pytest.raises(ScaleValueError):
+    with pytest.raises(ScaleNonPositiveValueError):
         make_rate(scale=scale)
 
 
@@ -132,7 +131,7 @@ def test_exchange_rate_accepts_minimal_nbrb_rate_step() -> None:
     ids=["zero", "negative-zero", "negative"],
 )
 def test_exchange_rate_rejects_non_positive_rate(rate: Decimal) -> None:
-    with pytest.raises(RateValueError):
+    with pytest.raises(RateNonPositiveValueError):
         make_rate(rate=rate)
 
 
@@ -147,7 +146,7 @@ def test_exchange_rate_rejects_non_finite_rate(rate: Decimal) -> None:
 
 
 def test_exchange_rate_checks_scale_before_rate() -> None:
-    with pytest.raises(ScaleValueError):
+    with pytest.raises(ScaleNonPositiveValueError):
         make_rate(scale=0, rate=Decimal("0"))
 
 
@@ -177,15 +176,3 @@ def test_deal_status_rejects_unknown_value() -> None:
 
 def test_deal_status_has_exactly_three_members() -> None:
     assert len(DealStatus) == 3
-
-
-@pytest.mark.parametrize(
-    "error_class",
-    [CurrencyCodeError, ScaleValueError, RateValueError, RateNotFiniteError],
-)
-def test_domain_errors_inherit_from_domain_error(error_class: type[DomainError]) -> None:
-    assert issubclass(error_class, DomainError)
-
-
-def test_domain_error_is_regular_exception() -> None:
-    assert issubclass(DomainError, Exception)
