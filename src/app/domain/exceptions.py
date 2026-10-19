@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 from uuid import UUID
 
@@ -65,6 +66,16 @@ class RateDateMismatchError(InvalidValueError):
         super().__init__("Exchange rates must be on the same date")
 
 
+class UnsupportedCurrencyError(InvalidValueError):
+    def __init__(self, code: str) -> None:
+        super().__init__(f"Currency {code!r} is not supported")
+
+
+class InvalidPeriodError(InvalidValueError):
+    def __init__(self) -> None:
+        super().__init__("date_from must not be later than date_to")
+
+
 class NotFoundError(DomainError):
     pass
 
@@ -81,3 +92,12 @@ class ConflictError(DomainError):
 class DealAlreadyResolvedError(ConflictError):
     def __init__(self, deal_id: UUID) -> None:
         super().__init__(f"Conclusion for deal with id {deal_id} already made")
+
+
+class UnavaliableError(DomainError):
+    pass
+
+
+class RatesNotAvaliableError(UnavaliableError):
+    def __init__(self, on_date: date) -> None:
+        super().__init__(f"Exchange rates for {on_date} are not loaded yet")
