@@ -11,13 +11,17 @@ from app.domain.exceptions import (
     DealAlreadyResolvedError,
     DealNotFoundError,
     DomainError,
+    InvalidPeriodError,
     InvalidValueError,
     NotFoundError,
     RateDateMismatchError,
     RateNonPositiveValueError,
     RateNotFiniteError,
+    RatesNotAvailableError,
     SameCurrencyExchangeError,
     ScaleNonPositiveValueError,
+    UnavailableError,
+    UnsupportedCurrencyError,
 )
 
 
@@ -37,6 +41,9 @@ from app.domain.exceptions import (
         (RateDateMismatchError, InvalidValueError),
         (DealNotFoundError, NotFoundError),
         (DealAlreadyResolvedError, ConflictError),
+        (RatesNotAvailableError, UnavailableError),
+        (UnsupportedCurrencyError, InvalidValueError),
+        (InvalidPeriodError, InvalidValueError),
     ],
 )
 def test_domain_error_belongs_to_its_group(
@@ -45,7 +52,15 @@ def test_domain_error_belongs_to_its_group(
     assert issubclass(error_class, group)
 
 
-@pytest.mark.parametrize("group", [InvalidValueError, NotFoundError, ConflictError])
+@pytest.mark.parametrize(
+    "group",
+    [
+        InvalidValueError,
+        NotFoundError,
+        ConflictError,
+        UnavailableError,
+    ],
+)
 def test_error_groups_inherit_from_domain_error(group: type[DomainError]) -> None:
     assert issubclass(group, DomainError)
 
