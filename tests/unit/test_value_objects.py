@@ -86,6 +86,7 @@ def test_currency_code_is_hashable_and_deduplicated_in_set() -> None:
 
 def test_currency_code_is_immutable() -> None:
     code = CurrencyCode("USD")
+
     with pytest.raises(dataclasses.FrozenInstanceError):
         code.code = "EUR"  # type: ignore[misc]
 

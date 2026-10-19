@@ -29,7 +29,7 @@ class DealReportQuery:
 @dataclass(frozen=True, slots=True)
 class CurrencyReportRow:
     """Cash totals for one currency over accepted deals
-    A deal count for both its currencies,
+    A deal counts for both its currencies,
     so deals_count summed over all rows is twice the number of deals
     """
 

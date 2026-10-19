@@ -24,6 +24,7 @@ def make_deal() -> Deal:
 
 def test_create_builds_pending_deal_from_rates() -> None:
     deal = make_deal()
+
     assert deal.status is DealStatus.PENDING
     assert deal.amount == Decimal(100)
     assert deal.from_currency == CurrencyCode("USD")
@@ -53,6 +54,7 @@ def test_resolving_pending_deal_sets_status_and_time(
 ) -> None:
     deal = make_deal()
     resolve(deal, RESOLVED_AT)
+
     assert deal.status is expected_status
     assert deal.resolved_at == RESOLVED_AT
 
@@ -73,8 +75,10 @@ def test_resolved_deal_cannot_be_resolved_again(
     deal = make_deal()
     first(deal, RESOLVED_AT)
     status_before = deal.status
+
     with pytest.raises(DealAlreadyResolvedError):
         second(deal, datetime(2026, 10, 17, 13, 0, tzinfo=UTC))
+
     assert deal.status is status_before
     assert deal.resolved_at == RESOLVED_AT
 
@@ -83,6 +87,7 @@ def test_deal_keeps_identity_after_state_change() -> None:
     deal = make_deal()
     snapshot = dataclasses.replace(deal)
     deal.accept(RESOLVED_AT)
+
     assert deal == snapshot
     assert hash(deal) == hash(snapshot)
 
@@ -93,4 +98,5 @@ def test_deals_with_same_fields_but_different_id_are_not_equal() -> None:
 
 def test_deal_is_not_equal_to_other_types() -> None:
     deal = make_deal()
+
     assert deal != deal.id

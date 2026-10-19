@@ -17,10 +17,10 @@ from app.domain.exceptions import (
     RateDateMismatchError,
     RateNonPositiveValueError,
     RateNotFiniteError,
-    RatesNotAvaliableError,
+    RatesNotAvailableError,
     SameCurrencyExchangeError,
     ScaleNonPositiveValueError,
-    UnavaliableError,
+    UnavailableError,
     UnsupportedCurrencyError,
 )
 
@@ -41,7 +41,7 @@ from app.domain.exceptions import (
         (RateDateMismatchError, InvalidValueError),
         (DealNotFoundError, NotFoundError),
         (DealAlreadyResolvedError, ConflictError),
-        (RatesNotAvaliableError, UnavaliableError),
+        (RatesNotAvailableError, UnavailableError),
         (UnsupportedCurrencyError, InvalidValueError),
         (InvalidPeriodError, InvalidValueError),
     ],
@@ -58,7 +58,7 @@ def test_domain_error_belongs_to_its_group(
         InvalidValueError,
         NotFoundError,
         ConflictError,
-        UnavaliableError,
+        UnavailableError,
     ],
 )
 def test_error_groups_inherit_from_domain_error(group: type[DomainError]) -> None:

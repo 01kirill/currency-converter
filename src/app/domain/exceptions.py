@@ -94,10 +94,10 @@ class DealAlreadyResolvedError(ConflictError):
         super().__init__(f"Conclusion for deal with id {deal_id} already made")
 
 
-class UnavaliableError(DomainError):
+class UnavailableError(DomainError):
     pass
 
 
-class RatesNotAvaliableError(UnavaliableError):
+class RatesNotAvailableError(UnavailableError):
     def __init__(self, on_date: date) -> None:
         super().__init__(f"Exchange rates for {on_date} are not loaded yet")
