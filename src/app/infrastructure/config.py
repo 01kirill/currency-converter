@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
@@ -13,7 +15,7 @@ class Settings(BaseSettings):
     nbrb_base_url: str = "https://api.nbrb.by"
     nbrb_timeout_seconds: float = 10.0
     rates_retry_seconds: int = 600
-    log_level: str = "INFO"
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
 
     @property
     def database_url(self) -> URL:
