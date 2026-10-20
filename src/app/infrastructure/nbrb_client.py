@@ -15,6 +15,7 @@ class NbrbRatesProvider:
         self._client = client
 
     async def fetch(self, on_date: date) -> list[ExchangeRate]:
+        """Rates for on_date, any network, HTTP or data problem becomes RatesNotAvailableError"""
         params = {"periodicity": "0", "ondate": on_date.isoformat()}
 
         try:

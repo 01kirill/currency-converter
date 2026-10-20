@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 
 import pytest
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.application.dto import CreateDealCommand, ResolveDealCommand
@@ -175,6 +176,21 @@ async def test_report_uses_minsk_day_boundaries(uow: SqlAlchemyUnitOfWork) -> No
     assert [r.received_amount for r in on_20th] == [Decimal("200.00")]
 
 
+async def wait_for_lock_waiter(session_factory: async_sessionmaker[AsyncSession]) -> None:
+    """Return once another connection is blocked on a row lock, fail after 5 seconds"""
+    query = text(
+        "SELECT count(*) FROM pg_stat_activity"
+        " WHERE wait_event_type = 'Lock' AND datname = current_database()"
+    )
+    async with session_factory() as session:
+        for _ in range(50):
+            if await session.scalar(query):
+                return
+            await session.rollback()  # pg_stat_activity is a per-transaction snapshot
+            await asyncio.sleep(0.1)
+    raise AssertionError("no transaction waited for the row lock")
+
+
 async def test_concurrent_resolve_is_blocked_until_first_commits(
     uow: SqlAlchemyUnitOfWork,
     session_factory: async_sessionmaker[AsyncSession],
@@ -192,7 +208,7 @@ async def test_concurrent_resolve_is_blocked_until_first_commits(
         assert locked is not None
 
         second = asyncio.create_task(lock_in_parallel())
-        await asyncio.sleep(0.3)
+        await wait_for_lock_waiter(session_factory)
         assert not second.done()
 
         locked.accept(NOW)
