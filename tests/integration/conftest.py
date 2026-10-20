@@ -1,6 +1,7 @@
 from collections.abc import AsyncIterator
 
 import pytest
+from pydantic import ValidationError
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
@@ -13,7 +14,10 @@ from app.infrastructure.db.uow import SqlAlchemyUnitOfWork
 @pytest.fixture
 async def session_factory() -> AsyncIterator[async_sessionmaker[AsyncSession]]:
     """Empty tables in the test database, cleaned after each test"""
-    settings = Settings()  # pyright: ignore[reportCallIssue]
+    try:
+        settings = Settings()  # pyright: ignore[reportCallIssue]
+    except ValidationError:
+        pytest.skip("Database settings are missing: cp .env.example .env")
     url = settings.database_url.set(database=f"{settings.postgres_db}_test")
     engine = create_async_engine(url, poolclass=NullPool)
     try:

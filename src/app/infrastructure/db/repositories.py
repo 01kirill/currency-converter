@@ -33,6 +33,8 @@ def _deal_to_domain(row: DealORM) -> Deal:
 
 
 class SqlAlchemyRateRepository:
+    """RateRepository on PostgreSQL, add_many is idempotent via ON CONFLICT DO NOTHING"""
+
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
@@ -61,6 +63,8 @@ class SqlAlchemyRateRepository:
 
 
 class SqlAlchemyDealRepository:
+    """DealRepository on PostgreSQL, the report is aggregated by a single SQL query"""
+
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
