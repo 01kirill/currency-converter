@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Path, status
 
 from app.application.dto import ResolveDealCommand
 from app.application.use_cases.create_deal import CreateDeal
@@ -38,7 +38,7 @@ async def list_pending_deals(
 
 @router.post("/{deal_id}/resolve", responses=error_responses(404, 409))
 async def resolve_deal(
-    deal_id: UUID,
+    deal_id: Annotated[UUID, Path(description="id returned by POST /deals")],
     body: ResolveDealRequest,
     resolve: Annotated[ResolveDeal, Depends(get_resolve_deal)],
 ) -> DealResponse:

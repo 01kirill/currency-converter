@@ -11,28 +11,43 @@ from app.domain.value_objects import DealStatus
 
 
 class CreateDealRequest(BaseModel):
-    amount: Decimal = Field(examples=["100.00"])
-    from_currency: str = Field(examples=["USD"])
-    to_currency: str = Field(examples=["EUR"])
+    amount: Decimal = Field(
+        description="Amount the client gives in from_currency: > 0, at most 2 decimal places",
+        examples=["100.00"],
+    )
+    from_currency: str = Field(
+        description="ISO 4217 code of the currency the client gives: 3 uppercase letters, "
+        "BYN or any daily NBRB currency",
+        examples=["USD"],
+    )
+    to_currency: str = Field(
+        description="ISO 4217 code of the currency the client receives,"
+        "must differ from from_currency",
+        examples=["EUR"],
+    )
 
     def to_command(self) -> CreateDealCommand:
         return CreateDealCommand(self.amount, self.from_currency, self.to_currency)
 
 
 class ResolveDealRequest(BaseModel):
-    accept: bool
+    accept: bool = Field(description="true to accept the deal, false to decline it")
 
 
 class DealResponse(BaseModel):
-    id: UUID
-    amount: Decimal
+    id: UUID = Field(description="Deal id, pass it to /deals/{deal_id}/resolve")
+    amount: Decimal = Field(description="Amount the client gives")
     from_currency: str
     to_currency: str
-    rate: Decimal
-    converted_amount: Decimal
+    rate: Decimal = Field(
+        description="Units of to_currency for 1 unit of from_currency, fixed at creation"
+    )
+    converted_amount: Decimal = Field(description="Amount the client receives, rounded to 2 places")
     status: DealStatus
     created_at: datetime
-    resolved_at: datetime | None
+    resolved_at: datetime | None = Field(
+        description="When the deal was accepted or declined, null while pending"
+    )
 
     @classmethod
     def from_domain(cls, deal: Deal) -> Self:
@@ -51,9 +66,13 @@ class DealResponse(BaseModel):
 
 class CurrencyReportRowResponse(BaseModel):
     currency: str
-    received_amount: Decimal
-    paid_out_amount: Decimal
-    deals_count: int
+    received_amount: Decimal = Field(
+        description="Received by the cash desk: sum of amount where this is from_currency"
+    )
+    paid_out_amount: Decimal = Field(
+        description="Paid out by the cash desk: sum of converted_amount where this is to_currency"
+    )
+    deals_count: int = Field(description="Accepted deals with this currency on either side")
 
     @classmethod
     def from_domain(cls, row: CurrencyReportRow) -> Self:
