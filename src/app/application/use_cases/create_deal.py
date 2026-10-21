@@ -1,3 +1,4 @@
+import logging
 from datetime import date
 from decimal import Decimal
 
@@ -6,6 +7,8 @@ from app.application.ports import Clock, UnitOfWork
 from app.domain.entities import Deal
 from app.domain.exceptions import RatesNotAvailableError, UnsupportedCurrencyError
 from app.domain.value_objects import BYN, CurrencyCode, ExchangeRate
+
+logger = logging.getLogger(__name__)
 
 
 class CreateDeal:
@@ -27,6 +30,15 @@ class CreateDeal:
             deal = Deal.create(cmd.amount, from_rate, to_rate, now)
             await self._uow.deals.add(deal)
             await self._uow.commit()
+        logger.info(
+            "Deal %s created: %s %s -> %s %s at rate %s",
+            deal.id,
+            deal.amount,
+            deal.from_currency.code,
+            deal.converted_amount,
+            deal.to_currency.code,
+            deal.rate,
+        )
         return deal
 
     async def _get_rate(self, code: CurrencyCode, on_date: date) -> ExchangeRate:

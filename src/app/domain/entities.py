@@ -10,6 +10,8 @@ from app.domain.value_objects import CurrencyCode, DealStatus, ExchangeRate, con
 
 @dataclass(slots=True, eq=False)
 class Deal:
+    """Exchange deal with a quote fixed at creation; equal by id, resolved exactly once"""
+
     id: UUID
     amount: Decimal
     rate: Decimal

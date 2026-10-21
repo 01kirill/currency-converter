@@ -9,12 +9,16 @@ from app.domain.value_objects import CurrencyCode, ExchangeRate
 
 
 class Clock(Protocol):
+    """Source of the current time"""
+
     def now(self) -> datetime:
         """Current aware datetime in Europe/Minsk"""
         ...
 
 
 class RatesProvider(Protocol):
+    """Source of official exchange rates"""
+
     async def fetch(self, on_date: date) -> list[ExchangeRate]:
         """Official NBRB rates for the date.
         Raises RatesNotAvailableError
@@ -23,6 +27,8 @@ class RatesProvider(Protocol):
 
 
 class RateRepository(Protocol):
+    """Storage of daily exchange rates"""
+
     async def add_many(self, rates: Sequence[ExchangeRate]) -> None:
         """Save rates, skip already stored (currency, date) pairs"""
         ...
@@ -33,6 +39,8 @@ class RateRepository(Protocol):
 
 
 class DealRepository(Protocol):
+    """Storage of exchange deals"""
+
     async def add(self, deal: Deal) -> None: ...
 
     async def get_for_update(self, deal_id: UUID) -> Deal | None:
@@ -54,6 +62,8 @@ class DealRepository(Protocol):
 
 
 class UnitOfWork(Protocol):
+    """One transaction over both repositories, nothing is saved without commit()"""
+
     @property
     def deals(self) -> DealRepository: ...
 

@@ -5,6 +5,8 @@ from sqlalchemy import URL
 
 
 class Settings(BaseSettings):
+    """Application settings from environment variables, falling back to .env"""
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     postgres_user: str

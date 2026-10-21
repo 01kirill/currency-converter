@@ -29,6 +29,8 @@ MAX_AMOUNT = Decimal("1e12")
 
 @dataclass(frozen=True, slots=True)
 class CurrencyCode:
+    """ISO 4217 alphabetic currency code: exactly 3 uppercase latin letters"""
+
     code: str
 
     def __post_init__(self) -> None:
@@ -40,6 +42,8 @@ BYN = CurrencyCode("BYN")
 
 
 class DealStatus(StrEnum):
+    """Deal lifecycle: pending until the client accepts or declines it, then final"""
+
     PENDING = "pending"
     ACCEPTED = "accepted"
     DECLINED = "declined"
@@ -47,6 +51,8 @@ class DealStatus(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class ExchangeRate:
+    """Official NBRB rate on a date: rate BYN for scale units of the currency"""
+
     rate_date: date
     currency_code: CurrencyCode
     scale: int
@@ -67,6 +73,8 @@ class ExchangeRate:
 
 @dataclass(frozen=True, slots=True)
 class Conversion:
+    """Result of convert(): cross rate and amount in the target currency"""
+
     rate: Decimal
     converted_amount: Decimal
 
@@ -76,6 +84,7 @@ def convert(
     from_rate: ExchangeRate,
     to_rate: ExchangeRate,
 ) -> Conversion:
+    """Convert via BYN: rate = from per-unit / to per-unit, amount rounded HALF_UP to 2 places"""
     if not amount.is_finite():
         raise AmountNotFiniteError()
     if amount > MAX_AMOUNT:
