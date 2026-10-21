@@ -39,6 +39,12 @@ def test_create_assigns_unique_id() -> None:
     assert make_deal().id != make_deal().id
 
 
+def test_create_normalizes_amount_to_two_places() -> None:
+    deal = Deal.create(Decimal("1e2"), USD_RATE, EUR_RATE, CREATED_AT)
+
+    assert str(deal.amount) == "100.00"
+
+
 def test_create_propagates_conversion_errors() -> None:
     with pytest.raises(SameCurrencyExchangeError):
         Deal.create(Decimal(100), USD_RATE, USD_RATE, CREATED_AT)
