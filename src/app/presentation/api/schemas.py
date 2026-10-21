@@ -11,6 +11,8 @@ from app.domain.value_objects import DealStatus
 
 
 class CreateDealRequest(BaseModel):
+    """Body of POST /deals"""
+
     amount: Decimal = Field(
         description="Amount the client gives in from_currency: > 0, at most 2 decimal places",
         examples=["100.00"],
@@ -31,10 +33,14 @@ class CreateDealRequest(BaseModel):
 
 
 class ResolveDealRequest(BaseModel):
+    """Body of POST /deals/{deal_id}/resolve"""
+
     accept: bool = Field(description="true to accept the deal, false to decline it")
 
 
 class DealResponse(BaseModel):
+    """Exchange deal as returned by every deals endpoint"""
+
     id: UUID = Field(description="Deal id, pass it to /deals/{deal_id}/resolve")
     amount: Decimal = Field(description="Amount the client gives")
     from_currency: str
@@ -65,6 +71,8 @@ class DealResponse(BaseModel):
 
 
 class CurrencyReportRowResponse(BaseModel):
+    """Report row: cash movement in one currency over the period"""
+
     currency: str
     received_amount: Decimal = Field(
         description="Received by the cash desk: sum of amount where this is from_currency"
@@ -85,4 +93,6 @@ class CurrencyReportRowResponse(BaseModel):
 
 
 class ErrorResponse(BaseModel):
+    """Error body of every 4xx and 503 response"""
+
     detail: str

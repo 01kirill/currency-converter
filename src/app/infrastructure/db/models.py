@@ -7,6 +7,8 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class Base(DeclarativeBase):
+    """Declarative base with predictable constraint names for migrations"""
+
     metadata = MetaData(
         naming_convention={
             "pk": "pk_%(table_name)s",
@@ -29,6 +31,8 @@ class RateORM(Base):
 
 
 class DealORM(Base):
+    """Exchange deal row, mapped to and from domain Deal in repositories"""
+
     __tablename__ = "deals"
     __table_args__ = (
         CheckConstraint("status IN ('pending', 'accepted', 'declined')", name="status_valid"),

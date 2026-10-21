@@ -21,6 +21,7 @@ STATUS_BY_ERROR: dict[type[DomainError], int] = {
 
 
 async def domain_error_handler(request: Request, e: Exception) -> JSONResponse:
+    """Domain error to JSON response, status code by the error group"""
     status_code = next(
         (code for error, code in STATUS_BY_ERROR.items() if isinstance(e, error)),
         status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -29,8 +30,10 @@ async def domain_error_handler(request: Request, e: Exception) -> JSONResponse:
 
 
 def register_error_handlers(app: FastAPI) -> None:
+    """Make every DomainError raised by an endpoint return ErrorResponse"""
     app.add_exception_handler(DomainError, domain_error_handler)
 
 
 def error_responses(*codes: int) -> dict[int | str, dict[str, Any]]:
+    """responses= for a route: these status codes return ErrorResponse"""
     return {code: {"model": ErrorResponse} for code in codes}

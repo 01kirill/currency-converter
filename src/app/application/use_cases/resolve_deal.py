@@ -1,7 +1,11 @@
+import logging
+
 from app.application.dto import ResolveDealCommand
 from app.application.ports import Clock, UnitOfWork
 from app.domain.entities import Deal
 from app.domain.exceptions import DealNotFoundError
+
+logger = logging.getLogger(__name__)
 
 
 class ResolveDeal:
@@ -23,4 +27,5 @@ class ResolveDeal:
                 deal.decline(now)
             await self._uow.deals.update(deal)
             await self._uow.commit()
+        logger.info("Deal %s %s", deal.id, deal.status.value)
         return deal

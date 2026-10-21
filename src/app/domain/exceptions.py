@@ -8,6 +8,8 @@ class DomainError(Exception):
 
 
 class InvalidValueError(DomainError):
+    """Input breaks a business rule"""
+
     pass
 
 
@@ -77,6 +79,8 @@ class InvalidPeriodError(InvalidValueError):
 
 
 class NotFoundError(DomainError):
+    """Requested object does not exist"""
+
     pass
 
 
@@ -86,6 +90,8 @@ class DealNotFoundError(NotFoundError):
 
 
 class ConflictError(DomainError):
+    """Request conflicts with the current state"""
+
     pass
 
 
@@ -95,6 +101,8 @@ class DealAlreadyResolvedError(ConflictError):
 
 
 class UnavailableError(DomainError):
+    """Temporary problem on the service side, retry later"""
+
     pass
 
 

@@ -115,7 +115,7 @@ class SqlAlchemyDealRepository:
             DealORM.resolved_at >= start,
             DealORM.resolved_at < end,
         )
-        zero = literal(Decimal(0))
+        zero = literal(Decimal("0.00"))
         received = select(
             DealORM.from_currency.label("currency"),
             DealORM.amount.label("received"),
