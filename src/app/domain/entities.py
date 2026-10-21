@@ -5,7 +5,13 @@ from typing import Self
 from uuid import UUID, uuid4
 
 from app.domain.exceptions import DealAlreadyResolvedError
-from app.domain.value_objects import CurrencyCode, DealStatus, ExchangeRate, convert
+from app.domain.value_objects import (
+    AMOUNT_PRECISION,
+    CurrencyCode,
+    DealStatus,
+    ExchangeRate,
+    convert,
+)
 
 
 @dataclass(slots=True, eq=False)
@@ -51,7 +57,7 @@ class Deal:
         conversion = convert(amount, from_rate, to_rate)
         return cls(
             id=uuid4(),
-            amount=amount,
+            amount=amount.quantize(AMOUNT_PRECISION),
             from_currency=from_rate.currency_code,
             to_currency=to_rate.currency_code,
             rate=conversion.rate,
