@@ -19,6 +19,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    ulimits:
+      nofile: 65536
 
 volumes:
   pgdata:

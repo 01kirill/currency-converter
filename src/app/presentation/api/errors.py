@@ -30,9 +30,10 @@ async def domain_error_handler(request: Request, e: Exception) -> JSONResponse:
 
 
 def register_error_handlers(app: FastAPI) -> None:
+    """Make every DomainError raised by an endpoint return ErrorResponse"""
     app.add_exception_handler(DomainError, domain_error_handler)
 
 
 def error_responses(*codes: int) -> dict[int | str, dict[str, Any]]:
-    """Make every DomainError raised by an endpoint return ErrorResponse"""
+    """responses= for a route: these status codes return ErrorResponse"""
     return {code: {"model": ErrorResponse} for code in codes}
